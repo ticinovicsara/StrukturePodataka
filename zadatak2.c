@@ -4,7 +4,7 @@
 
 typedef struct _person* position;
 typedef struct _person {
-    char fname[32], lname[32];
+    char fname[32], lname[32];                                        
     int birth_year;
     position next;
 }person;
@@ -22,27 +22,42 @@ position delete(position head, position wanted);
 void insert_before(position head, position curr, char* fname, char* lname, int year);
 void sort_by_lname(position first);
 void print_in_file(position first);
-void read_file(position head, FILE* fp);
+void read_file(position head);
 
 
 int main() {
-    position head = (position)malloc(sizeof(person));
-    if(!head){
-        printf("Neuspjesno alociranje memorije\n");
-        return -1;
+    person head = { .fname = "", .lname = "", .birth_year = 0, .next = NULL};
+
+    position temp;
+    position first = head;
+    position prev;
+    //brisanje s kraja
+    while(first != NULL){
+        temp = first;
+
+        if(temp->next == NULL){
+            free(temp);
+            *first = NULL;
+        }
+    
+       else{
+        while(temp->next != NULL){
+            prev = temp;
+            temp = temp->next;
+        }
+        prev->next = NULL;
+        free(temp);
+       }
     }
-
-    head->next = NULL;
-
-
 
     return 0;
 }
 
-position create_person(char* fname, char* lname, int* year) {
+
+position create_person(char* fname, char* lname, int year) {
     position new_person = NULL;    
 
-    new_person = (position*)malloc(sizeof(person)); //moramo je alocirati
+    new_person = (position)malloc(sizeof(person)); //moramo je alocirati
     if (new_person == NULL) {
         printf("Neuspjesno alocirana memorija\n");
         return NULL;    //NULL jer je pointer
@@ -54,7 +69,6 @@ position create_person(char* fname, char* lname, int* year) {
     new_person->next = NULL;
 
     return new_person;
-
 }
 
 
@@ -66,7 +80,7 @@ void insert_after(position prev, position new) {
 }
 
 
-int prepend_list(position head, char* fname, char* lname, int* year) {
+int prepend_list(position head, char* fname, char* lname, int year) {
     position new_person = NULL;
 
     new_person = create_person(fname, lname, year);
@@ -98,7 +112,7 @@ position find_last(position head) {
     return temp;
 }
 
-int apend_list(position head, char* fname, char* lname, int* year) {
+int apend_list(position head, char* fname, char* lname, int year) {
     position new_person = NULL, last = NULL;
 
     new_person = create_person(fname, lname, year);
@@ -219,7 +233,9 @@ void print_in_file(position first){     //saljemo head->next
     printf("Podaci uspejsno upisani u datoteku!\n");
 }
 
-void read_file(position head, FILE* fp){
+void read_file(position head){
+    FILE *fp = NULL;
+    fp = fopen("lista.txt", "r");
     if(fp == NULL){
         printf("datoteka ne postoji\n");
         return;
