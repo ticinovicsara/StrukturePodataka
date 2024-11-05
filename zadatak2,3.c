@@ -28,26 +28,12 @@ void read_file(position head);
 int main() {
     person head = { .fname = "", .lname = "", .birth_year = 0, .next = NULL};
 
-    position temp;
-    position first = head;
-    position prev;
-    //brisanje s kraja
-    while(first != NULL){
-        temp = first;
-
-        if(temp->next == NULL){
-            free(temp);
-            *first = NULL;
-        }
-    
-       else{
-        while(temp->next != NULL){
-            prev = temp;
-            temp = temp->next;
-        }
-        prev->next = NULL;
+    position temp = &head;
+    position next;
+    while(temp != NULL){
+        next = temp->next;
         free(temp);
-       }
+        temp = next;
     }
 
     return 0;
@@ -90,6 +76,7 @@ int prepend_list(position head, char* fname, char* lname, int year) {
     }
 
     insert_after(head, new_person);
+    return 0;
 }
 
 int print_list(position first) {
@@ -99,6 +86,7 @@ int print_list(position first) {
         printf("%s %s %d\n", temp->fname, temp->lname, temp->birth_year);
         temp = temp->next;
     }
+    return 0;
 }
 
 
@@ -112,7 +100,7 @@ position find_last(position head) {
     return temp;
 }
 
-int apend_list(position head, char* fname, char* lname, int year) {
+int append_list(position head, char* fname, char* lname, int year) {
     position new_person = NULL, last = NULL;
 
     new_person = create_person(fname, lname, year);
@@ -141,7 +129,7 @@ position find_by_lname(position first, char* lname) {       //saljemo head->next
     return NULL;
 }
 
-position find_previus(position head, position wanted) {
+position find_previous(position head, position wanted) {
     position temp = head;
 
     while (temp->next != NULL) {
@@ -187,6 +175,25 @@ void insert_before(position head, position curr, char* fname, char* lname, int y
     temp->next = q;
 }
 
+void insert_before_person(position curr, position head, char* fname, char* lname, int year) {
+    position new_person = create_person(fname, lname, year);
+
+    position prev = find_previous(head, curr);
+    
+    if (prev != NULL) {
+        insert_after(prev, curr);
+    } else {
+        printf("Greska: Prosledjena pozicija nije validna.\n");
+    }
+}
+
+void insert_after_person(position curr, char* fname, char* lname, int year) {
+    position new_person = create_person(fname, lname, year);
+    
+    insert_after(curr, new_person);
+}
+
+
 void sort_by_lname(position first){     //saljemo head->next
     position j, prev, temp;
     position end = NULL;
@@ -224,7 +231,7 @@ void print_in_file(position first){     //saljemo head->next
 
     fprintf(fp, "IME\tPREZIME\t\tGODINA RODJENJA\n");
     while(temp != NULL){
-        fprintf("%s %s %d\n", temp->fname, temp->lname, temp->birth_year);
+        fprintf(fp, "%s %s %d\n", temp->fname, temp->lname, temp->birth_year);
         temp = temp->next;
     }
 
