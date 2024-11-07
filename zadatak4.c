@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct _element* position;
 typedef struct _element{
@@ -9,11 +10,12 @@ typedef struct _element{
 }Element;
 
 //prototypes
+void free_poly(position head);
 position create_element(int coeff, int exp);
 void insert_after(position curr, position new);
 int insert_sorted(position head, position new_el);
 void delete_after(position temp);
-position read_file(char* filename, position** polynomials, int* brojac);
+position* read_file(char* filename, position** polynomials, int* brojac);
 void add_polynomials(position* polynomials, int count, position result);
 void multiply_polynomials(position* polynomials, int count, position result);
 void print_polynomial(position head);
@@ -35,7 +37,23 @@ int main(){
     printf("Produkt polinoma\n");
     print_polynomial(product);
 
+    free_poly(sum);
+    free_poly(product);
+
+    for(int i=0; i<brojac_polinoma; i++){
+        free_poly(polynomials[i]);
+    }
+    free(polynomials);
+
     return 0;
+}
+
+void free_poly(position head){
+    while(head != NULL){
+        position temp = head;
+        head = head->next;
+        free(temp);
+    }
 }
 
 position create_element(int coeff, int exp){
@@ -43,7 +61,7 @@ position create_element(int coeff, int exp){
     new_el = (position)malloc(sizeof(Element));
     if(new_el == NULL){
         printf("neuspjesna alokacija memorije\n");
-        return -1;
+        return NULL;
     }
 
     new_el->coeff = coeff;
@@ -81,6 +99,7 @@ int insert_sorted(position head, position new_el){
             free(new_el);
         }
     }
+    return 0;
 }
 
 void delete_after(position temp){
@@ -92,7 +111,7 @@ void delete_after(position temp){
     free(todelete);
 }
 
-position read_file(char* filename, position** polynomials, int* brojac){
+position* read_file(char* filename, position** polynomials, int* brojac){
     FILE* file = NULL;
     file = fopen(filename, "r");
     if(!file){
@@ -128,12 +147,13 @@ position read_file(char* filename, position** polynomials, int* brojac){
         }
 
         (*brojac)++;
-        *polynomials = realloc(*polynomials, (*brojac) * sizeof(position));   
-        if(!(*polynomials)){
+        position* temp = realloc(*polynomials, (*brojac) * sizeof(position));   
+        if(!temp){
             printf("neuspjesna alokacija memorije\n");
             fclose(file);
             return NULL;
         }
+        *polynomials = temp;
         (*polynomials)[(*brojac) - 1] = head;   //novi polinom je pohranjen
     }
 
