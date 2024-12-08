@@ -1,0 +1,5 @@
+2024-1-15
+jabuka 6 0.99
+ananas 2 2.5
+kivi 10 1.12
+paprika 3 0.8

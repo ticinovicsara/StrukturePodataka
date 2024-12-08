@@ -1,0 +1,5 @@
+2024-1-16
+jabuka 2 0.99
+mandarina 5 0.6
+limun 7 0.45
+sljiva 10 1.34
